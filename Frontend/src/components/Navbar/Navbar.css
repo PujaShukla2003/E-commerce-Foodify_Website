@@ -1,0 +1,175 @@
+/* Navbar container with gradient background */
+.navbar{
+    padding: 20px 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(90deg, #fdefefff 0%, #fad0c4 50%, #fad0c4 100%);
+    box-shadow: 0 4px 10px rgba(11, 9, 9, 0.1); /* subtle shadow for depth */
+    border-radius: 8px; /* slightly rounded edges */
+}
+
+/* Logo */
+.logo-text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 28px;
+  font-weight: 800;
+  color: #ff5722;
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+  text-shadow: 1px 1px 2px #ffad91; /* subtle glow */
+  
+}
+.logo-icon {
+  font-size: 30px;
+  color: #ff5722;
+}
+
+/* Desktop Menu */
+.navbar-menu{
+    display: flex;
+    list-style: none;
+    gap: 20px;
+    color: #49557e;
+    font-size: 18px;
+}
+.navbar-menu a, .navbar-menu Link {
+    text-decoration: none;
+    color: #49557e;
+    transition: 0.3s;
+}
+.navbar-menu a:hover, .navbar-menu Link:hover,
+.navbar-menu .active {
+    border-bottom: 2px solid tomato;
+    color: tomato;
+}
+
+/* Right side */
+.navbar-right{
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+.navbar button{
+    background: transparent;
+    font-size: 16px;
+    color: #49557e;
+    border: 1px solid tomato;
+    padding: 10px 30px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.navbar button:hover{
+    background-color: #ec8472ff;
+}
+
+/* Cart dot */
+.navbar-search-icon{
+    position: relative;
+}
+.navbar-search-icon .dot{
+    position: absolute;
+    min-width: 10px;
+    min-height: 10px;
+    background-color: tomato;
+    border-radius: 50%;
+    top: -8px;
+    right: -8px;
+}
+
+/* Profile dropdown */
+.navbar-profile{
+    position: relative;
+}
+.nav-profile-dropdown{
+    position: absolute;
+    display: none;
+    right: 0;
+    z-index: 1;
+}
+.navbar-profile:hover .nav-profile-dropdown{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #e7775eff;
+    padding: 12px 25px;
+    border-radius: 4px;
+    border: 1px solid tomato;
+    list-style: none;
+}
+.nav-profile-dropdown li{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+.nav-profile-dropdown img{
+    width: 20px;
+}
+.nav-profile-dropdown li:hover{
+    color: tomato;
+}
+
+/* Mobile menu icon */
+.mobile-menu-icon{
+    display: none;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+/* Responsive padding and menu */
+@media (max-width:1050px) {
+    .navbar {
+        padding: 20px 30px;
+    }
+    .navbar-menu{
+        gap: 20px;
+        font-size: 17px;
+    }
+    .navbar-right{
+        gap: 30px;
+    }
+}
+
+@media (max-width:900px) {
+    .navbar {
+        padding: 18px 25px;
+    }
+    .navbar-menu{
+        gap: 15px;
+        font-size: 16px;
+    }
+    .navbar-right{
+        gap: 20px;
+    }
+}
+
+/* Mobile: hide menu, show hamburger */
+@media (max-width:750px) {
+    .navbar {
+        padding: 15px 20px;
+    }
+    .navbar-menu{
+        display: none;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        background: linear-gradient(180deg, #fad0c4 0%, #ff9a9e 100%);
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+        border-top: 1px solid tomato;
+        z-index: 10;
+        border-radius: 0 0 8px 8px;
+    }
+    .navbar-menu.active-mobile{
+        display: flex;
+    }
+    .mobile-menu-icon{
+        display: block;
+    }
+}
