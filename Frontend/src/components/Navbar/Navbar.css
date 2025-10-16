@@ -173,3 +173,29 @@
         display: block;
     }
 }
+/* 🔹 Search input container */
+.navbar-search {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* 🔹 Search input field */
+.navbar-search input {
+    padding: 8px 30px 8px 10px; /* right padding for search icon */
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 150px;
+    background-color: #ec8472ff;
+}
+
+/* 🔹 Search icon */
+.navbar-search .search-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 2;
+}
+

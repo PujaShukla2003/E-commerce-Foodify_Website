@@ -1,18 +1,23 @@
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
-const authMiddleware = async (req,res,next)  => {
-    const {token} = req.headers;
+const authMiddleware = (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+
     if (!token) {
-        return res.json({success:false,message:"Not Authorized Login Again"})
+      return res.status(401).json({ success: false, message: "Access denied. No token provided." });
     }
-    try {
-        const token_decode = jwt.verify(token,process.env.JWT_SECRET);
-        req.body.userId = token_decode.id;
-        next();
-    } catch (error) {
-        console.log(error);
-        res.json({success:false,message:"Error"})
-    }
-}
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = { id: decoded.id, email: decoded.email };
+    next();
+  } catch (error) {
+    console.error("Auth Middleware Error:", error.message);
+    return res.status(401).json({ success: false, message: "Invalid or expired token" });
+  }
+};
 
 export default authMiddleware;

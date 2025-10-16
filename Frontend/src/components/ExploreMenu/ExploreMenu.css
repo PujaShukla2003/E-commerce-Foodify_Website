@@ -2,12 +2,11 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-    background: linear-gradient(90deg, #fdefefff 0%, #fad0c4 50%, #fad0c4 100%);
-    
+    background: linear-gradient(90deg, #fdefef 0%, #fad0c4 50%, #fad0c4 100%);
 }
 
 .explore-menu h1 {
-    color: #ff5722;;
+    color: #ff5722;
     font-weight: 500;
 }
 
@@ -23,7 +22,7 @@
     gap: 30px;
     text-align: center;
     margin: 20px 0px;
-    overflow-x: scroll;
+    overflow-x: auto;
 }
 
 .explore-menu-list::-webkit-scrollbar {
@@ -31,17 +30,19 @@
 }
 
 .menu-image {
-    width: 7.5vw;
-    min-width: 80px;
+    width: 100px;        /* ✅ Fixed same size */
+    height: 100px;       /* ✅ Fixed same size */
+    object-fit: cover;   /* ✅ Maintain aspect ratio */
+    border-radius: 50%;  /* ✅ Circular shape */
     cursor: pointer;
-    border-radius: 50%;
     transition: 0.2s;
+    border: 3px solid transparent;
 }
 
 .explore-menu-list-items p {
     margin-top: 10px;
-    color: #0a0707ff;
-    font-size: max(1.4vw,10px);
+    color: #0a0707;
+    font-size: 14px;
     cursor: pointer;
 }
 
@@ -53,7 +54,7 @@
 }
 
 .menu-image.active {
-    border: 4px solid tomato;
+    border: 4px solid tomato; /* ✅ active border */
     padding: 2px;
 }
 
@@ -63,3 +64,18 @@
         font-size: 14px;
     }
 }
+.menu-image {
+    width: 100px; /* fixed size */
+    height: 100px;
+    min-width: 80px;
+    cursor: pointer;
+    border-radius: 50%; /* circular */
+    object-fit: cover;
+    transition: 0.3s;
+}
+
+.menu-image.active {
+    border: 4px solid tomato;
+    padding: 2px;
+}
+

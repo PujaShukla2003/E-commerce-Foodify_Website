@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@formspree/react": "^3.0.0",
     "axios": "^1.6.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
-    "react-router-dom": "^6.23.0"
+    "react-router-dom": "^6.23.0",
+    "swiper": "^12.0.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
@@ -28,6 +30,5 @@
   },
   "engines": {
     "node": "18.x"
-  
-}
+  }
 }

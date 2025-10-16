@@ -1,105 +1,171 @@
 import React, { useState } from "react";
 import "./Contact.css";
+import {
+  FaPhoneAlt,
+  FaEnvelope,
+  FaMapMarkerAlt,
+  FaFacebook,
+  FaInstagram,
+  FaTwitter,
+} from "react-icons/fa";
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     name: "",
     email: "",
-    phone: "",
-    subject: "",
-    inquiry: "Feedback",
+    category: "",
     message: "",
   });
+  const [status, setStatus] = useState("");
 
-  const [submitted, setSubmitted] = useState(false);
+  // ✅ Web3Forms Access Key
+  const WEB3FORMS_ACCESS_KEY = "d357b770-fcf1-43a4-a04a-298e4c5b44ce";
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus("sending");
 
-    // Frontend-only message simulation
-    console.log("Message sent:", formData);
-    setSubmitted(true);
+    const formData = new FormData();
+    formData.append("access_key", WEB3FORMS_ACCESS_KEY);
+    formData.append("name", form.name);
+    formData.append("email", form.email);
+    formData.append("category", form.category);
+    formData.append("message", form.message);
+    formData.append(
+      "subject",
+      `New ${form.category} message from Food Ordering Site`
+    );
 
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      subject: "",
-      inquiry: "Feedback",
-      message: "",
-    });
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
 
-    // Hide success message after 3 seconds
-    setTimeout(() => setSubmitted(false), 3000);
+      const data = await response.json();
+
+      if (data.success) {
+        setStatus("success");
+        setForm({ name: "", email: "", category: "", message: "" });
+      } else {
+        setStatus("error");
+      }
+    } catch (error) {
+      console.error("Error sending form:", error);
+      setStatus("error");
+    }
   };
 
   return (
-    <div className="contact" id="contact">
-      <h2>Contact Us</h2>
-      <p>We’d love to hear from you! Fill out the form below 👇</p>
+    <div className="contact-page">
+      <div className="contact-header">
+        <h1>Contact Us</h1>
+        <p>
+          Have questions, feedback, or need help with your order?  
+          We’d love to hear from you!
+        </p>
+      </div>
 
-      <form className="contact-form" onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Your Name"
-          value={formData.name}
-          required
-          onChange={handleChange}
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Your Email"
-          value={formData.email}
-          required
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="phone"
-          placeholder="Your Phone Number"
-          value={formData.phone}
-          required
-          onChange={handleChange}
-        />
-        <input
-          type="text"
-          name="subject"
-          placeholder="Subject"
-          value={formData.subject}
-          required
-          onChange={handleChange}
-        />
-        <select
-          name="inquiry"
-          value={formData.inquiry}
-          onChange={handleChange}
-          required
-        >
-          <option value="Feedback">Feedback</option>
-          <option value="Support">Support</option>
-          <option value="Hire Me">Hire Me</option>
-          <option value="Other">Other</option>
-        </select>
-        <textarea
-          name="message"
-          placeholder="Your Message"
-          rows="5"
-          value={formData.message}
-          required
-          onChange={handleChange}
-        ></textarea>
+      <div className="contact-wrapper">
+        {/* Left Side: Contact Form */}
+        <div className="contact-form-box">
+          <h2>Send Us a Message</h2>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              name="name"
+              placeholder="Your Name"
+              value={form.name}
+              onChange={handleChange}
+              required
+            />
 
-        <button type="submit">Send Message</button>
-      </form>
+            <input
+              type="email"
+              name="email"
+              placeholder="Your Email"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
 
-      {submitted && <p className="success-message">✅ Message Sent Successfully!</p>}
+            <select
+              name="category"
+              value={form.category}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Category</option>
+              <option value="Customer Support">Customer Support</option>
+              <option value="Food Issue">Food Issue</option>
+              <option value="Feedback">Feedback / Suggestion</option>
+              <option value="Payment Issue">Refund / Payment Issue</option>
+            </select>
+
+            <textarea
+              name="message"
+              placeholder="Write your message here..."
+              value={form.message}
+              onChange={handleChange}
+              required
+            ></textarea>
+
+            <button type="submit" disabled={status === "sending"}>
+              {status === "sending" ? "Sending..." : "Send Message"}
+            </button>
+
+            {status === "success" && (
+              <p className="success">✅ Message sent successfully!</p>
+            )}
+            {status === "error" && (
+              <p className="error">
+                ⚠️ Something went wrong. Please try again later.
+              </p>
+            )}
+          </form>
+        </div>
+
+        {/* Right Side: Contact Info */}
+        <div className="contact-info">
+          <h2>Get in Touch</h2>
+          <p>
+            <FaPhoneAlt /> +91 933496 6286
+          </p>
+          <p>
+            <FaEnvelope /> shuklaarya209@gmail.com
+          </p>
+
+          {/* 📍 Clickable Location Icon */}
+          <div className="location-icon">
+            <a
+              href="https://www.google.com/maps/place/Sector+62,+Noida,+Uttar+Pradesh/"
+              target="_blank"
+              rel="noreferrer"
+              title="Click to view our location"
+            >
+              <FaMapMarkerAlt />
+            </a>
+            <span>View Location</span>
+          </div>
+
+          {/* 🌐 Social Links */}
+          <div className="social-links">
+            <a href="https://www.facebook.com/share/1EVojKjTSA/" target="_blank" rel="noreferrer">
+              <FaFacebook />
+            </a>
+            <a href="https://www.instagram.com/pujashukla_2003?utm_source=qr&igsh=MTg0MW52amw1OXZ1dA==" target="_blank" rel="noreferrer">
+              <FaInstagram />
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noreferrer">
+              <FaTwitter />
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

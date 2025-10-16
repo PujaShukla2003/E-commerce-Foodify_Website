@@ -1,38 +1,50 @@
-import React, { useContext, useEffect } from 'react'
-import './Verify.css'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { StoreContext } from '../../context/StoreContext';
-import axios from 'axios';
+import React, { useEffect, useContext, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+import { StoreContext } from "../../context/StoreContext";
+import API from "../../axios/axios";
+import "./Verify.css";
 
 const Verify = () => {
+  const [searchParams] = useSearchParams();
+  const successParam = searchParams.get("success");
+  const orderId = searchParams.get("orderId");
+  const { token } = useContext(StoreContext);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
-    const [searchParams,setSearchParams] = useSearchParams();
-    const success = searchParams.get("success")
-    const orderId = searchParams.get("orderId")
-    const {url} = useContext(StoreContext);
-    const navigate = useNavigate();
-
-    const verifyPayment = async () => {
-        const response = await axios.post(url+"/api/order/verify",{success,orderId});
-        if (response.data.success) {
-            navigate("/myorders");
-        }
-        else{
-            navigate("/")
-        }
+  useEffect(() => {
+    if (!token) {
+      navigate("/cart");
+      return;
     }
 
-    useEffect(()=>{
-        verifyPayment();
-    },[])
+    const verifyPayment = async () => {
+      try {
+        const res = await API.post("/order/verify", { orderId, success: successParam });
+        if (res.data.success) {
+          alert("Payment successful (Demo). Order placed.");
+          navigate("/myorders");
+        } else {
+          alert("Payment failed/cancelled (Demo).");
+          navigate("/");
+        }
+      } catch (err) {
+        console.error("Verify Error:", err.response?.data || err.message);
+        alert("Error verifying order. See console.");
+        navigate("/");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    verifyPayment();
+  }, [token]);
 
   return (
-    <div className='verify'>
-        <div className="spinner">
-
-        </div>
+    <div className="verify">
+      {loading ? <p>Verifying (Demo)...</p> : <p>Done</p>}
     </div>
-  )
-}
+  );
+};
 
-export default Verify
+export default Verify;

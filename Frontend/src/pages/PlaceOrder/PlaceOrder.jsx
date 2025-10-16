@@ -1,11 +1,12 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Add this import
-import './PlaceOrder.css';
-import { StoreContext } from '../../context/StoreContext';
-import axios from 'axios';
+import React, { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { StoreContext } from "../../context/StoreContext";
+import API from "../../axios/axios";
+import "./PlaceOrder.css";
 
 const PlaceOrder = () => {
-  const { getTotalCartAmount, token, food_list, cartItems, url } = useContext(StoreContext);
+  const { food_list, cartItems, getTotalCartAmount, token } = useContext(StoreContext);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -19,93 +20,95 @@ const PlaceOrder = () => {
     phone: ""
   });
 
-  const placeOrder = async (event) => {
-    event.preventDefault();
-    console.log("Placing order...");
+  useEffect(() => {
+    if (!token || getTotalCartAmount() === 0) navigate("/cart");
+  }, [token, getTotalCartAmount, navigate]);
 
-    const orderItems = food_list.reduce((acc, item) => {
-      if (cartItems[item._id] > 0) {
-        const itemInfo = { ...item, quantity: cartItems[item._id] };
-        acc.push(itemInfo);
-      }
-      return acc;
-    }, []);
+  const onChangeHandler = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const placeOrder = async (e) => {
+    e.preventDefault();
+
+    // Filter out cart items that have quantity > 0
+    const orderItems = food_list
+      .filter(item => cartItems[item._id] > 0)
+      .map(item => ({
+        _id: item._id,
+        name: item.name,
+        price: item.price,
+        quantity: cartItems[item._id],
+        image: item.image
+      }));
+
+    if (!orderItems.length) {
+      alert("Your cart is empty!");
+      return;
+    }
 
     const orderData = {
-      address: formData,
       items: orderItems,
-      amount: getTotalCartAmount() + 2,
+      amount: getTotalCartAmount() + 2, // delivery fee
+      address: formData,
+      email: formData.email,
+      payment_method_types: ["card"] // ensure Stripe accepts it
     };
 
-    
-      const response = await axios.post(url + "/api/order/place", orderData, { headers: { token } });
-      console.log("Response from server:", response.data);
-      
-      if (response.data.success) {
-        const { session_url } = response.data;
-        console.log("Redirecting to:", session_url);
-        window.location.replace(session_url);
+    try {
+      const res = await API.post("/api/order/place", orderData);
+
+      if (res.data.success && res.data.session_url) {
+        // redirect to Stripe Checkout
+        window.location.href = res.data.session_url;
       } else {
-        alert("Error: " + response.data.message);
+        alert("Unable to place order. Please check console for details.");
+        console.error("Order response:", res.data);
       }
-  }
-
-  const navigate = useNavigate();
-
-  useEffect(()=>{
-    if (!token) {
-      navigate('/cart')
+    } catch (error) {
+      console.error("Order Error Response:", error.response?.data || error.message);
+      alert("Unable to place order. Please check console for details.");
     }
-    else if(getTotalCartAmount()===0){
-      navigate('/cart')
-    }
-  },[token])
-
-  const onChangeHandler = (event) => {
-    const { name, value } = event.target;
-    setFormData(prevData => ({ ...prevData, [name]: value }));
   };
 
   return (
-    <form onSubmit={placeOrder} className='place-order'>
+    <form onSubmit={placeOrder} className="place-order">
       <div className="place-order-left">
-        <p className='title'>Delivery Information</p>
+        <p className="title">Delivery Information</p>
         <div className="multi-fields">
-          <input required name='firstName' onChange={onChangeHandler} value={formData.firstName} type="text" placeholder='First Name' />
-          <input required name='lastName' onChange={onChangeHandler} value={formData.lastName} type="text" placeholder='Last Name' />
+          <input required name="firstName" onChange={onChangeHandler} value={formData.firstName} placeholder="First Name" />
+          <input required name="lastName" onChange={onChangeHandler} value={formData.lastName} placeholder="Last Name" />
         </div>
-        <input required name='email' onChange={onChangeHandler} value={formData.email} type="email" placeholder='Email address' />
-        <input required name='street' onChange={onChangeHandler} value={formData.street} type="text" placeholder='Street' />
+        <input required name="email" type="email" onChange={onChangeHandler} value={formData.email} placeholder="Email" />
+        <input required name="street" onChange={onChangeHandler} value={formData.street} placeholder="Street" />
         <div className="multi-fields">
-          <input required name='city' onChange={onChangeHandler} value={formData.city} type="text" placeholder='City' />
-          <input required name='state' onChange={onChangeHandler} value={formData.state} type="text" placeholder='State' />
+          <input required name="city" onChange={onChangeHandler} value={formData.city} placeholder="City" />
+          <input required name="state" onChange={onChangeHandler} value={formData.state} placeholder="State" />
         </div>
         <div className="multi-fields">
-          <input required name='zipcode' onChange={onChangeHandler} value={formData.zipcode} type="text" placeholder='Zip Code' />
-          <input required name='country' onChange={onChangeHandler} value={formData.country} type="text" placeholder='Country' />
+          <input required name="zipcode" onChange={onChangeHandler} value={formData.zipcode} placeholder="Zip Code" />
+          <input required name="country" onChange={onChangeHandler} value={formData.country} placeholder="Country" />
         </div>
-        <input required name='phone' onChange={onChangeHandler} value={formData.phone} type="text" placeholder='Phone' />
+        <input required name="phone" onChange={onChangeHandler} value={formData.phone} placeholder="Phone" />
       </div>
+
       <div className="place-order-right">
         <div className="cart-total">
           <h2>Cart Totals</h2>
-          <div>
-            <div className="cart-total-details">
-              <p>Subtotal</p>
-              <p>${getTotalCartAmount()}</p>
-            </div>
-            <hr />
-            <div className="cart-total-details">
-              <p>Delivery Fee</p>
-              <p>${getTotalCartAmount() === 0 ? 0 : 2}</p>
-            </div>
-            <hr />
-            <div className="cart-total-details">
-              <b>Total</b>
-              <b>${getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}</b>
-            </div>
+          <div className="cart-total-details">
+            <p>Subtotal</p>
+            <p>₹{getTotalCartAmount()}</p>
           </div>
-          <button type='submit'>PROCEED TO PAYMENT</button>
+          <div className="cart-total-details">
+            <p>Delivery Fee</p>
+            <p>₹{getTotalCartAmount() === 0 ? 0 : 2}</p>
+          </div>
+          <div className="cart-total-details">
+            <b>Total</b>
+            <b>₹{getTotalCartAmount() === 0 ? 0 : getTotalCartAmount() + 2}</b>
+          </div>
+          <button type="submit">PROCEED TO PAYMENT</button>
         </div>
       </div>
     </form>
