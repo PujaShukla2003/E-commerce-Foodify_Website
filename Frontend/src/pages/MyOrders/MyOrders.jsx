@@ -7,11 +7,11 @@ import { assets } from '../../assets/assets';
 const MyOrders = () => {
   const { url, token } = useContext(StoreContext);
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false); // loader state
+  const [loading, setLoading] = useState(false); 
 
   const fetchOrders = async () => {
     try {
-      setLoading(true); // fetch start
+      setLoading(true); 
       const response = await axios.post(
         `${url}/api/order/userorders`,
         {},
@@ -25,7 +25,6 @@ const MyOrders = () => {
 
       console.log("Orders response:", response.data);
 
-      // ✅ Safe handling of all possible API formats
       let ordersArray = [];
 
       if (Array.isArray(response.data)) {
@@ -35,14 +34,14 @@ const MyOrders = () => {
       } else if (Array.isArray(response.data.orders)) {
         ordersArray = response.data.orders;
       } else {
-        ordersArray = []; // fallback if no valid array found
+        ordersArray = []; 
       }
 
       setData(ordersArray);
     } catch (error) {
       console.error("Error fetching orders:", error.response?.data || error.message);
     } finally {
-      setLoading(false); // fetch end
+      setLoading(false); 
     }
   };
 

@@ -1,15 +1,13 @@
-// backend/controllers/userController.js
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import validator from "validator";
 
-// function to create token
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-// login user
+
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -32,27 +30,23 @@ const loginUser = async (req, res) => {
   }
 };
 
-// register user
 const registerUser = async (req, res) => {
   const { name, password, email } = req.body;
   try {
-    // check if user exists
+    
     const exists = await userModel.findOne({ email });
     if (exists) {
       return res.json({ success: false, message: "User already exists" });
     }
 
-    // validate email
     if (!validator.isEmail(email)) {
       return res.json({ success: false, message: "Please enter a valid email" });
     }
 
-    // password length check
     if (password.length < 8) {
       return res.json({ success: false, message: "Password must be at least 8 characters" });
     }
 
-    // hashing password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 

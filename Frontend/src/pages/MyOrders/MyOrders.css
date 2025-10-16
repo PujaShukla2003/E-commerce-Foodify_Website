@@ -17,7 +17,6 @@
   margin-top: 30px;
 }
 
-/* Individual order card */
 .my-orders-order {
   display: grid;
   grid-template-columns: 0.5fr 2fr 1fr 1fr 2fr 1fr;
@@ -64,7 +63,7 @@
   color: white;
 }
 
-/* Loader */
+
 .loader {
   text-align: center;
   padding: 30px;
@@ -72,7 +71,7 @@
   font-weight: 500;
 }
 
-/* Responsive Design */
+
 @media (max-width: 900px) {
   .my-orders-order {
     grid-template-columns: 1fr 2fr 1fr;

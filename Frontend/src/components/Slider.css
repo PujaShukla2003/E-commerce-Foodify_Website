@@ -100,7 +100,7 @@
     font-size: 1.8rem;
   }
   .slide-content p {
-    display: none; /* hide on small screens */
+    display: none; 
   }
   .slide-content button {
     padding: 10px 20px;

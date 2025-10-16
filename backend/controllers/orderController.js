@@ -6,7 +6,6 @@ dotenv.config();
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// ✅ Place Order (Card + UPI)
 export const placeOrder = async (req, res) => {
   try {
     const { items, amount, address, email } = req.body;
@@ -15,24 +14,22 @@ export const placeOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "Cart is empty" });
     }
 
-    // Create order in DB
     const order = await orderModel.create({
       userId: req.user.id,
       items,
       amount,
       address,
       status: "Food Processing",
-      payment: false, // ✅ fixed spelling
+      payment: false, 
     });
 
-    // Create Stripe session (Card + UPI)
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card", "upi"], // ✅ UPI supported
+      payment_method_types: ["card", "upi"], 
       line_items: items.map((item) => ({
         price_data: {
           currency: "inr",
           product_data: { name: item.name },
-          unit_amount: item.price * 100, // paise me
+          unit_amount: item.price * 100, 
         },
         quantity: item.quantity,
       })),
@@ -49,7 +46,7 @@ export const placeOrder = async (req, res) => {
   }
 };
 
-// ✅ Verify Payment
+
 export const verifyOrder = async (req, res) => {
   try {
     const { orderId, success } = req.body;
@@ -58,7 +55,7 @@ export const verifyOrder = async (req, res) => {
     if (!order) return res.status(404).json({ success: false, message: "Order not found" });
 
     if (success === "true") {
-      order.payment = true; // ✅ fixed
+      order.payment = true; 
       order.status = "Order Confirmed";
       await order.save();
       res.json({ success: true, message: "Payment successful" });
@@ -73,7 +70,6 @@ export const verifyOrder = async (req, res) => {
   }
 };
 
-// ✅ Get user orders
 export const userOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({ userId: req.user.id });
@@ -84,7 +80,7 @@ export const userOrders = async (req, res) => {
   }
 };
 
-// ✅ Admin: List all orders
+
 export const listOrders = async (req, res) => {
   try {
     const orders = await orderModel.find({});

@@ -32,7 +32,7 @@ const PlaceOrder = () => {
   const placeOrder = async (e) => {
     e.preventDefault();
 
-    // Filter out cart items that have quantity > 0
+    
     const orderItems = food_list
       .filter(item => cartItems[item._id] > 0)
       .map(item => ({
@@ -50,17 +50,17 @@ const PlaceOrder = () => {
 
     const orderData = {
       items: orderItems,
-      amount: getTotalCartAmount() + 2, // delivery fee
+      amount: getTotalCartAmount() + 2, 
       address: formData,
       email: formData.email,
-      payment_method_types: ["card"] // ensure Stripe accepts it
+      payment_method_types: ["card"] 
     };
 
     try {
       const res = await API.post("/api/order/place", orderData);
 
       if (res.data.success && res.data.session_url) {
-        // redirect to Stripe Checkout
+        
         window.location.href = res.data.session_url;
       } else {
         alert("Unable to place order. Please check console for details.");

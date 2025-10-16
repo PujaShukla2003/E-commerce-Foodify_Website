@@ -9,7 +9,6 @@ const StoreContextProvider = ({ children }) => {
   const [token, setToken] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Load food list
   const fetchFoodList = async () => {
     try {
       const res = await API.get("/api/food/list");
@@ -19,7 +18,6 @@ const StoreContextProvider = ({ children }) => {
     }
   };
 
-  // Load cart data for logged-in user
   const loadCartData = async (token) => {
     try {
       const res = await API.post("/api/cart/get", {}, {
@@ -31,7 +29,6 @@ const StoreContextProvider = ({ children }) => {
     }
   };
 
-  // Add to cart
   const addToCart = async (itemId) => {
     setCartItems(prev => ({ ...prev, [itemId]: (prev[itemId] || 0) + 1 }));
     if (token) {
@@ -43,7 +40,6 @@ const StoreContextProvider = ({ children }) => {
     }
   };
 
-  // Remove from cart
   const removeFromCart = async (itemId) => {
     setCartItems(prev => {
       const updated = { ...prev };

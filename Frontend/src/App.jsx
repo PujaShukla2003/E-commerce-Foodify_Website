@@ -10,7 +10,7 @@ import LoginPopup from './components/LoginPopup/LoginPopup';
 import Verify from './pages/Verify/Verify';
 import MyOrders from './pages/MyOrders/MyOrders';
 import Contact from './components/Contact/Contact';
-import MenuPage from './components/MenuPage/MenuPage';   // ✅ MenuPage import
+import MenuPage from './components/MenuPage/MenuPage';   
 
 const App = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -27,7 +27,7 @@ const App = () => {
           <Route path="/verify" element={<Verify />} />
           <Route path="/myorders" element={<MyOrders />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/menu" element={<MenuPage />} />   {/* ✅ Menu route */}
+          <Route path="/menu" element={<MenuPage />} />  
         </Routes>
       </div>
       <Footer />
