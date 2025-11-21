@@ -20,7 +20,12 @@ const Verify = () => {
 
     const verifyPayment = async () => {
       try {
-        const res = await API.post("/order/verify", { orderId, success: successParam });
+        // FIXED LINE (100% error solve)
+        const res = await API.post("/api/order/verify", {
+          orderId,
+          success: successParam,
+        });
+
         if (res.data.success) {
           alert("Payment successful (Demo). Order placed.");
           navigate("/myorders");

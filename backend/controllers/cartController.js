@@ -2,49 +2,66 @@ import userModel from "../models/userModel.js";
 
 const addToCart = async (req, res) => {
   try {
-    const userData = await userModel.findById(req.body.userId);
+    const userId = req.user.id;   // <-- JWT se user id le raha hai
+    const itemId = req.body.itemId;
 
-    if (!userData) return res.status(404).json({ success: false, message: "User not found" });
+    const userData = await userModel.findById(userId);
+    if (!userData) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
     const cartData = userData.cartData || {};
-    cartData[req.body.itemId] = (cartData[req.body.itemId] || 0) + 1;
+    cartData[itemId] = (cartData[itemId] || 0) + 1;
 
-    await userModel.findByIdAndUpdate(req.body.userId, { cartData });
-    res.json({ success: true, message: "Added To Cart" });
+    await userModel.findByIdAndUpdate(userId, { cartData });
+
+    return res.json({ success: true, message: "Added To Cart" });
+
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "Error" });
+    console.log("Add to Cart Error:", error);
+    return res.json({ success: false, message: "Error in Add To Cart" });
   }
 };
 
 const removeFromCart = async (req, res) => {
   try {
-    const userData = await userModel.findById(req.body.userId);
+    const userId = req.user.id;  // <-- JWT se user id le raha hai
+    const itemId = req.body.itemId;
 
-    if (!userData) return res.status(404).json({ success: false, message: "User not found" });
+    const userData = await userModel.findById(userId);
+    if (!userData) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
     const cartData = userData.cartData || {};
-    if (cartData[req.body.itemId] > 0) cartData[req.body.itemId] -= 1;
+    if (cartData[itemId] > 0) {
+      cartData[itemId] -= 1;
+    }
 
-    await userModel.findByIdAndUpdate(req.body.userId, { cartData });
-    res.json({ success: true, message: "Removed From Cart" });
+    await userModel.findByIdAndUpdate(userId, { cartData });
+
+    return res.json({ success: true, message: "Removed From Cart" });
+
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "Error" });
+    console.log("Remove From Cart Error:", error);
+    return res.json({ success: false, message: "Error in Remove From Cart" });
   }
 };
 
 const getCart = async (req, res) => {
   try {
-    const userData = await userModel.findById(req.body.userId);
+    const userId = req.user.id;  // <-- JWT se user id le raha hai
 
-    if (!userData) return res.status(404).json({ success: false, message: "User not found" });
+    const userData = await userModel.findById(userId);
+    if (!userData) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
-    const cartData = userData.cartData || {};
-    res.json({ success: true, cartData });
+    return res.json({ success: true, cartData: userData.cartData || {} });
+
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "Error" });
+    console.log("Get Cart Error:", error);
+    return res.json({ success: false, message: "Error in Get Cart" });
   }
 };
 
